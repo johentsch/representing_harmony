@@ -9,7 +9,7 @@ class Pitch(Point):
     pass
 
 
-class IntervalClass:
+class IntervalClass(Vector):
     pass
 
 
