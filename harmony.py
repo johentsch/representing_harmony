@@ -5,6 +5,14 @@ from typing import Collection, Tuple
 from abstract import Point
 from pitch import IntervalClass, PitchClass
 
+# Setting the aliases SPC and SIC to the actual implementation of pitch and interval types
+# That way, users can replace the internal types with those from music21, DCMLab/pitchtypes, or other
+import pitch
+
+SPC = pitch.SpecificPitchClass
+SIC = pitch.SpecificIntervalClass
+EPC = pitch.EnharmonicPitchClass
+
 
 class Harmony(ABC):
     """Superclass for harmonic objects of all kinds and all levels of abstraction."""
@@ -89,33 +97,37 @@ class Scale(PitchClassSelector):
 
 
 class MajorChord(Chord):
-    intervals = (0, 4, 7)
+    intervals = (SIC("P1"), SIC("M3"), SIC("P5"))
 
 
 class MajorScale(Scale):
-    intervals = (0, 2, 4, 5, 7, 9, 11)
+    intervals = (SIC(0), SIC(2), SIC(4), SIC(-1), SIC(1), SIC(3), SIC(5))
 
 
 class MajorPentatonicScale(Scale):
-    intervals = (0, 2, 4, 7, 9)
+    intervals = (SIC(0), SIC(2), SIC(4), SIC(1), SIC(3))
 
 
 if __name__ == "__main__":
     major_chord = MajorChord()
     print(
-        f"Abstract major chord with scale degrees expressed as enharmonic intervals: {major_chord.__dict__}"
+        f"Abstract major chord with scale degrees expressed as specific intervals: {major_chord.__dict__}"
     )
-    major_chord.root = 55
+    major_chord.root = EPC(1)
     print(
         f"Concrete major chord after setting root to {major_chord.root}: {major_chord.__dict__}"
     )
-    print(f"Major chord initialized with root D4: {MajorChord(62)}")
+    major_chord.root = SPC("F#")
+    print(
+        f"Concrete major chord after setting root to {major_chord.root}: {major_chord.__dict__}"
+    )
+    print(f"Major chord initialized with root Cb: {MajorChord(SPC(-7))}")
     major_scale = MajorScale()
     print(
         f"Abstract major scale with scale degrees expressed as enharmonic intervals: {major_scale.__dict__}"
     )
-    major_scale.root = 60
+    major_scale.root = SPC("C#")
     print(
-        f"Concrete major scale after setting root to {major_scale.root}: {major_scale.__dict__}"
+        f"Concrete major scale after setting root to {major_scale.root}: {major_scale}"
     )
-    print(f"Major pentatonic scale with root F#4: {MajorPentatonicScale(66)}")
+    print(f"Major pentatonic scale with root Gb: {MajorPentatonicScale(SPC(-6))}")
